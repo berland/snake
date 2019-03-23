@@ -1,11 +1,13 @@
 import pygame
 from random import randint
 import os
-current_path = os.path.dirname(__file__)
+os.chdir(os.path.dirname(__file__))
 pygame.init()
+speed = 10
 disp_x = 600
 disp_y = 600
 skyBlue = (0,255,255)
+yellow = (255, 242, 0)
 black = (0,0,0)
 white = (255,255,255)
 green = (0,200,50)
@@ -15,8 +17,6 @@ brightGreen = (0,255,0)
 gameDisp = pygame.display.set_mode((disp_x,disp_y))
 pygame.display.set_caption("Hungry Snake")
 clock = pygame.time.Clock()
-dotImg = pygame.image.load(os.path.join(current_path,'da dot.png'))
-foodImg = pygame.image.load(os.path.join(current_path,'da food.png'))
 def detectCollisions(x1,y1,w1,h1,x2,y2,w2,h2):
     if (x2+w2>=x1>=x2 and y2+h2>=y1>=y2):
         return True
@@ -57,14 +57,14 @@ def greenBtnTxt():
 	textRect = (115,305)
 	gameDisp.blit(textSurf,textRect)
 def dot(x,y):
-	gameDisp.blit(dotImg , (x,y))
+	pygame.draw.rect(gameDisp, white,(x,y,36,36))
 def food(x,y):
-	gameDisp.blit(foodImg,(x,y))
+	pygame.draw.rect(gameDisp, yellow,(x,y,36,36))
 def gameIntro(state):
 	stage = state
 	intro = True
 	if stage == 1:
-		pygameImg = pygame.image.load(os.path.join(current_path,"pygame.png"))
+		pygameImg = pygame.image.load("pygame.png")
 		logoimage = gameDisp.blit(pygameImg,(50,50))
 		pygame.display.update()
 		pygame.time.delay(2000)
@@ -105,7 +105,7 @@ def gameLoop():
 	y = (disp_y * 0.5)
 	xChange = 0
 	yChange = 0
-	dirs = 1
+	dirs = 0
 	""" 1 = up
 	2 = down
 	3 = right
@@ -146,13 +146,25 @@ def gameLoop():
 		dot(x,y)
 		for	i in range(point):
 			dot(tail[i][0],tail[i][1])
+			if dirs == 1:
+				if detectCollisions(x+1,y,34,1,tail[i][0],tail[i][1],36,36):
+					gameIntro(2)
+			elif dirs == 2:
+				if detectCollisions(x+1,y+36,34,1,tail[i][0],tail[i][1],36,36):
+					gameIntro(2)
+			elif dirs == 3:
+				if detectCollisions(x+36,y+1,1,34,tail[i][0],tail[i][1],36,36):
+					gameIntro(2)
+			elif dirs == 4:
+				if detectCollisions(x,y+1,1,34,tail[i][0],tail[i][1],36,36):
+					gameIntro(2)
 		if x < 0 or x > disp_x-36:
 			gameIntro(2)
 		if y < 0 or y > disp_y-36:
 			gameIntro(2)
 		food(foodx,foody)
 		pygame.display.update()
-		clock.tick(10)
+		clock.tick(speed)
 gameIntro(1)
 gameLoop()
 
